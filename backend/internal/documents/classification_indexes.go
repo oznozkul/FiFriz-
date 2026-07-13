@@ -3,6 +3,9 @@ package documents
 import "gorm.io/gorm"
 
 func EnsureDocumentClassificationIndexes(db *gorm.DB) error {
+	if !db.Migrator().HasTable(&Document{}) {
+		return nil
+	}
 	return db.Exec(`
 		CREATE INDEX IF NOT EXISTS idx_documents_ai_document_type
 		ON documents (tenant_id, ai_document_type)

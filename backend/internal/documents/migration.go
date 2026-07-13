@@ -75,11 +75,11 @@ func Migrate(db *gorm.DB, legacyTenantID string, legacyUserID string) error {
 		}
 	}
 
-	if err := EnsureDocumentClassificationIndexes(db); err != nil {
+	if err := db.AutoMigrate(&Document{}, &DocumentText{}, &DocumentChunk{}, &DocumentVersion{}, &DocumentComment{}, &DocumentImportantDate{}, &DocumentRelationship{}, &DocumentSummary{}, &DocumentSuggestedTag{}, &DocumentAIMetadata{}, &DocumentEntity{}, &DocumentRelatedSuggestion{}); err != nil {
 		return err
 	}
 
-	if err := db.AutoMigrate(&Document{}, &DocumentText{}, &DocumentChunk{}, &DocumentVersion{}, &DocumentComment{}, &DocumentImportantDate{}, &DocumentRelationship{}, &DocumentSummary{}, &DocumentSuggestedTag{}, &DocumentAIMetadata{}, &DocumentEntity{}, &DocumentRelatedSuggestion{}); err != nil {
+	if err := EnsureDocumentClassificationIndexes(db); err != nil {
 		return err
 	}
 
