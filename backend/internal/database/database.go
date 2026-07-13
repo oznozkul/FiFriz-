@@ -139,7 +139,17 @@ func AutoMigrate(db *gorm.DB) error {
 	}
 
 	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS vector`).Error; err != nil {
-		return err
+		return fmt.Errorf(
+			`pgvector extension is required but not available on this PostgreSQL server: %w
+
+Install pgvector for your Postgres major version, then run as a superuser:
+  CREATE EXTENSION IF NOT EXISTS vector;
+
+Example (replace host/user/db with your .env values):
+  psql "host=127.0.0.1 user=ordermanagement dbname=FiFrizDb" -c 'CREATE EXTENSION IF NOT EXISTS vector;'
+`,
+			err,
+		)
 	}
 
 	legacyTenantID, legacyUserID, err := auth.Migrate(db)
