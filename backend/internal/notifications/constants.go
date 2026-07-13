@@ -1,0 +1,41 @@
+package notifications
+
+const (
+	TypeDocumentSharedWithYou   = "document_shared_with_you"
+	TypePublicShareLinkCreated  = "public_share_link_created"
+	TypeDocumentCommentAdded    = "document_comment_added"
+	TypeDocumentCommentReplied  = "document_comment_replied"
+	TypeDocumentVersionUploaded = "document_version_uploaded"
+	TypeDocumentVersionRestored = "document_version_restored"
+	TypeDocumentFavorited       = "document_favorited"
+	TypeDocumentMovedToTrash    = "document_moved_to_trash"
+	TypeDocumentRestored        = "document_restored"
+	TypeFolderCreated           = "folder_created"
+	TypeDocumentProcessed       = "document_processed"
+	TypeDocumentProcessingFailed = "document_processing_failed"
+	TypeWorkflowCreated          = "workflow_created"
+	TypeWorkflowApprovalRequested = "workflow_approval_requested"
+	TypeWorkflowApproved         = "workflow_approved"
+	TypeWorkflowRejected         = "workflow_rejected"
+	TypeWorkflowCancelled        = "workflow_cancelled"
+	TypeWorkflowCompleted        = "workflow_completed"
+	TypeIntegrationSyncCompleted = "integration_sync_completed"
+	TypeIntegrationSyncFailed    = "integration_sync_failed"
+	TypeGmailSyncCompleted       = "gmail_sync_completed"
+	TypeGmailSyncFailed          = "gmail_sync_failed"
+	TypeOutlookSyncCompleted     = "outlook_sync_completed"
+	TypeOutlookSyncFailed        = "outlook_sync_failed"
+	TypeGoogleDriveSyncCompleted = "google_drive_sync_completed"
+	TypeGoogleDriveSyncFailed    = "google_drive_sync_failed"
+	TypeOneDriveSyncCompleted    = "onedrive_sync_completed"
+	TypeOneDriveSyncFailed       = "onedrive_sync_failed"
+	TypePasswordChanged          = "password_changed"
+)
+
+const (
+	EntityTypeDocument = "document"
+	EntityTypeFolder   = "folder"
+	EntityTypeComment  = "comment"
+	EntityTypeWorkflow = "workflow"
+	EntityTypeIntegration = "integration"
+)

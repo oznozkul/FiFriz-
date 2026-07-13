@@ -1,0 +1,5 @@
+storage/documents/*
+tmp/
+.env
+.env.*
+!.env.example
