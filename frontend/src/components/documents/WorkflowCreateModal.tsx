@@ -2,6 +2,7 @@ import { ArrowDown, ArrowUp, ClipboardCheck, Plus, Trash2, X } from "lucide-reac
 import { useEffect, useState } from "react";
 import type { TenantMember } from "../../services/tenantService";
 import { listTenantMembers } from "../../services/tenantService";
+import { createId } from "../../utils/createId";
 import { PrimaryButton, Spinner, ModalFooter, ModalShell } from "../common";
 import { StatusBadge } from "../common/StatusBadge";
 
@@ -20,7 +21,7 @@ type WorkflowCreateModalProps = {
 export function WorkflowCreateModal({ isOpen, onClose, onSubmit }: WorkflowCreateModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [steps, setSteps] = useState<WorkflowStepDraft[]>([{ id: crypto.randomUUID(), approverUserId: "", stepOrder: 1 }]);
+  const [steps, setSteps] = useState<WorkflowStepDraft[]>([{ id: createId(), approverUserId: "", stepOrder: 1 }]);
   const [members, setMembers] = useState<TenantMember[]>([]);
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,7 +37,7 @@ export function WorkflowCreateModal({ isOpen, onClose, onSubmit }: WorkflowCreat
   if (!isOpen) return null;
 
   const addStep = () => {
-    setSteps((current) => [...current, { id: crypto.randomUUID(), approverUserId: "", stepOrder: current.length + 1 }]);
+    setSteps((current) => [...current, { id: createId(), approverUserId: "", stepOrder: current.length + 1 }]);
   };
 
   const removeStep = (id: string) => {
@@ -64,7 +65,7 @@ export function WorkflowCreateModal({ isOpen, onClose, onSubmit }: WorkflowCreat
       });
       setTitle("");
       setDescription("");
-      setSteps([{ id: crypto.randomUUID(), approverUserId: "", stepOrder: 1 }]);
+      setSteps([{ id: createId(), approverUserId: "", stepOrder: 1 }]);
       onClose();
     } finally {
       setIsSubmitting(false);

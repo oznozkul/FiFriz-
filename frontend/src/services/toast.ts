@@ -1,3 +1,5 @@
+import { createId } from "../utils/createId";
+
 export type ToastType = "success" | "error" | "info" | "loading";
 
 export type ToastItem = {
@@ -18,7 +20,7 @@ function emit() {
 }
 
 function addToast(type: ToastType, message: string, duration: number) {
-  const id = crypto.randomUUID();
+  const id = createId();
   items = [...items, { id, type, message, duration }];
   emit();
 
