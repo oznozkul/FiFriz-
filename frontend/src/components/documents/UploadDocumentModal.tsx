@@ -1,5 +1,5 @@
 import { UploadCloud, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IconButton, ModalFooter, ModalShell, PrimaryButton, Spinner, FileTypeIcon, extensionFromFileName } from "../common";
 import { apiBaseUrl, clearAccessToken, getAccessToken } from "../../services/apiClient";
 import { useFolderLabels } from "../../hooks/useFolderLabels";
@@ -9,13 +9,15 @@ import { toast } from "../../services/toast";
 import type { Folder } from "../../types/folder";
 import type { Tag } from "../../types/tag";
 
+const EMPTY_TAG_NAMES: string[] = [];
+
 type UploadDocumentModalProps = {
   isOpen: boolean;
   onClose: () => void;
   initialTagNames?: string[];
 };
 
-export function UploadDocumentModal({ isOpen, onClose, initialTagNames = [] }: UploadDocumentModalProps) {
+export function UploadDocumentModal({ isOpen, onClose, initialTagNames = EMPTY_TAG_NAMES }: UploadDocumentModalProps) {
   const labels = useFolderLabels();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -27,10 +29,12 @@ export function UploadDocumentModal({ isOpen, onClose, initialTagNames = [] }: U
   const [isTagsLoading, setIsTagsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const initialTagKey = useMemo(() => initialTagNames.join("\0"), [initialTagNames]);
+  const selectLoadFailed = labels.selectLoadFailed;
 
   useEffect(() => {
     if (!isOpen) {
-      setSelectedTagIds([]);
+      setSelectedTagIds((current) => (current.length === 0 ? current : []));
       return;
     }
 
@@ -55,7 +59,7 @@ export function UploadDocumentModal({ isOpen, onClose, initialTagNames = [] }: U
         if (!cancelled) {
           setFolders([]);
           setTags([]);
-          toast.error(labels.selectLoadFailed);
+          toast.error(selectLoadFailed);
         }
       })
       .finally(() => {
@@ -68,7 +72,9 @@ export function UploadDocumentModal({ isOpen, onClose, initialTagNames = [] }: U
     return () => {
       cancelled = true;
     };
-  }, [isOpen, initialTagNames, labels.selectLoadFailed]);
+    // initialTagKey stabilizes array identity; initialTagNames used only when isOpen opens.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: avoid refetch loop on new [] each render
+  }, [isOpen, initialTagKey, selectLoadFailed]);
 
   if (!isOpen) return null;
 
