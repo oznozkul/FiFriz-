@@ -174,7 +174,7 @@ func Load() (*Config, error) {
 			ShutdownTimeout: getDuration("APP_SHUTDOWN_TIMEOUT", 10*time.Second),
 		},
 		Database: DatabaseConfig{
-			DSN:             getEnv("DATABASE_DSN", "host=localhost user=postgres password=postgres dbname=fileai port=5432 sslmode=disable TimeZone=UTC"),
+			DSN:             buildDatabaseDSN(),
 			MaxIdleConns:    getInt("DATABASE_MAX_IDLE_CONNS", 10),
 			MaxOpenConns:    getInt("DATABASE_MAX_OPEN_CONNS", 50),
 			ConnMaxLifetime: getDuration("DATABASE_CONN_MAX_LIFETIME", time.Hour),
@@ -270,13 +270,44 @@ func Load() (*Config, error) {
 	}
 
 	if cfg.Database.DSN == "" {
-		return nil, fmt.Errorf("DATABASE_DSN is required")
+		return nil, fmt.Errorf("database connection is required: set DATABASE_DSN or DATABASE_HOST/DATABASE_USER/DATABASE_PASSWORD/DATABASE_NAME")
 	}
 	if cfg.JWT.Secret == "" {
 		return nil, fmt.Errorf("JWT_SECRET is required")
 	}
 
 	return cfg, nil
+}
+
+// buildDatabaseDSN prefers DATABASE_DSN when set; otherwise builds from parts.
+func buildDatabaseDSN() string {
+	if dsn := strings.TrimSpace(os.Getenv("DATABASE_DSN")); dsn != "" {
+		return dsn
+	}
+
+	host := getEnv("DATABASE_HOST", "")
+	user := getEnv("DATABASE_USER", "")
+	password := getEnv("DATABASE_PASSWORD", "")
+	name := getEnv("DATABASE_NAME", "")
+	if host == "" || user == "" || name == "" {
+		// Local development fallback when neither DSN nor parts are configured.
+		return "host=localhost user=postgres password=postgres dbname=fifriz port=5432 sslmode=disable TimeZone=UTC"
+	}
+
+	port := getEnv("DATABASE_PORT", "5432")
+	sslMode := getEnv("DATABASE_SSLMODE", "disable")
+	timezone := getEnv("DATABASE_TIMEZONE", "UTC")
+
+	parts := []string{
+		"host=" + host,
+		"user=" + user,
+		"password=" + password,
+		"dbname=" + name,
+		"port=" + port,
+		"sslmode=" + sslMode,
+		"TimeZone=" + timezone,
+	}
+	return strings.Join(parts, " ")
 }
 
 func getEnv(key, fallback string) string {
